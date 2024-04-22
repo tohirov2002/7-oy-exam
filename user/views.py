@@ -7,8 +7,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.core.mail import send_mail
-
+from django.template.loader import render_to_string
+from django.contrib.auth import get_user_model
 from user.serializers import UserSerializers, PasswordChangeSerializer, PasswordResetSerializer
+from rest_framework.views import APIView
+from rest_framework import status
 
 
 class RegisterView(CreateAPIView):
@@ -41,14 +44,36 @@ class PasswordResetView(generics.GenericAPIView):
         token = data['token']
         email = serializer.validated_data['email']
 
+        # Foydalanuvchi obyektini olish
+        user = get_user_model().objects.get(email=email)
+
         reset_link = f'http://127.0.0.1:8000/api/accounts/reset/{uid}/{token}/'
 
         send_mail(
             'Password Reset',
             f'Use the following link to reset your password: {reset_link}',
             'ahmad1519@gmail.com',
-            [user.email],
+            [user.email],  # Foydalanuvchining email manzili
             fail_silently=False,
         )
 
-        return Response({'detail': 'Password reset link has been sent to your email.'}, status=status.HTTP_200_OK)
+
+class EmailConfirmationView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        user = User.objects.filter(email=email).first()
+        if user:
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            current_site = get_current_site(request)
+            mail_subject = 'Email Confirmation'
+            message = render_to_string('email_confirmation.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': uid,
+                'token': token,
+            })
+            send_mail(mail_subject, message, 'from@example.com', [email])
+            return Response({'message': 'Confirmation email sent.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
