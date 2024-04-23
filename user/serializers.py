@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
+
 UserModel = get_user_model()
 
 
@@ -13,7 +14,7 @@ class UserSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = UserModel
-        fields = ['username', 'email', 'password']
+        fields = ["username", "email", "password"]
 
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -23,4 +24,3 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 class ResetPasswordEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
-

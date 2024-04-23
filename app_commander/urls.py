@@ -4,6 +4,6 @@ from rest_framework.routers import DefaultRouter
 from .views import CommanderListView
 
 router = DefaultRouter()
-router.register(r'commander', CommanderListView)
+router.register(r"commander", CommanderListView)
 
 urlpatterns = router.urls

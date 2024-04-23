@@ -5,5 +5,4 @@ from .models import Commander
 class CommanderListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Commander
-        fields = '__all__'
-
+        fields = "__all__"
