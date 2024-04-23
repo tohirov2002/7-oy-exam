@@ -3,7 +3,6 @@ from datetime import timedelta
 from django.urls import path, include
 from conf import settings
 from django.conf.urls.static import static
-
 # impor drf yasg
 from django.urls import re_path
 from rest_framework import permissions
@@ -79,6 +78,7 @@ urlpatterns = [
     # my urls
     path("api/v1/commander/", include('app_commander.urls')),
     path("api/accounts/", include('user.urls')),
+    path('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
     # drf yasg urls
     # path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
